@@ -1,0 +1,152 @@
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Invoices</h3>
+    </div>
+    <div class="card-body border-bottom py-3">
+        <div class="d-flex">
+            <div class="text-muted">
+                Show
+                <div class="mx-2 d-inline-block">
+                    <input type="text" class="form-control form-control-sm" unicorn:change="users_list()" unicorn:model="items_per_page"  value="{{ items_per_page }}" size="3" aria-label="User count">
+                </div>
+                entries
+            </div>
+            <div class="ms-auto text-muted">
+                Search:
+                <div class="ms-2 d-inline-block">
+                    <input type="text" class="form-control form-control-sm" aria-label="Search invoice">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+    {% if page.object_list %}
+        <table class="table card-table table-vcenter text-nowrap datatable">
+            <thead>
+                <tr>
+                    <th class="w-1">No.</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in page.object_list %}
+                <tr>
+                    <td>{{forloop.counter0|add:page.start_index}}</td>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{% if user.is_active %} Active {% else %} Non-Active {% endif %}</td>
+                    <td class="text-end">
+                        <span class="dropdown">
+                            <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown">Actions</button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" href="#">
+                                Edit
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                Delete
+                                </a>
+                            </div>
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex align-items-center">
+        <p class="m-0 text-muted">Showing <span>{{ page.start_index }}</span> to <span>{{ page.end_index }}</span> of <span>{{ page.paginator.count }}</span> entries</p>
+        {% if page.paginator.num_pages > 1 %}
+            <ul class="pagination m-0 ms-auto">
+        {% if page.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true" unicorn:click="go_to_page({{ page.previous_page_number }})">
+              <!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="15 6 9 12 15 18"></polyline></svg>
+              prev
+            </a>
+          </li>
+        {% else %}
+            <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true" >
+              <!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="15 6 9 12 15 18"></polyline></svg>
+              prev
+            </a>
+          </li>
+        {% endif %}
+        {% for i in page_range|default_if_none:page.paginator.get_elided_page_range %}
+                {% if page.number == i %}
+                <li class="page-item active">
+                    <button class="page-link " aria-label="Page {{ i }}" aria-current="page">{{ i }}</button>
+                </li>
+                {% else %}
+                {% if i == page.paginator.ELLIPSIS %}
+                <li class="page-item">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <button class="page-link" unicorn:click="go_to_page({{ i }})" aria-label="Page {{ i }}" aria-current="page">{{ i }}</button>
+                </li>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+        {% if page.has_next %}
+            <li class="page-item">
+            <a class="page-link" href="#" unicorn:click="go_to_page({{ page.next_page_number }})">
+              next <!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="9 6 15 12 9 18"></polyline></svg>
+            </a>
+          </li>
+        {% else %}
+            <li class="page-item disabled">
+            <a class="page-link" href="#" >
+              next <!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="9 6 15 12 9 18"></polyline></svg>
+            </a>
+          </li>
+        {% endif %}
+        </ul>
+{#        <nav class="pagination" role="navigation" aria-label="pagination">#}
+{#            {% if page.has_previous %}#}
+{#            <btn class="pagination-previous" unicorn:click="go_to_page({{ page.previous_page_number }})">Previous</btn>#}
+{#            {% else %}#}
+{#            <btn class="pagination-previous" disabled>Previous</btn>#}
+{#            {% endif %}#}
+{#            {% if page.has_next %}#}
+{#            <btn class="pagination-next" unicorn:click="go_to_page({{ page.next_page_number }})">Next page</btn>#}
+{#            {% else %}#}
+{#            <btn class="pagination-next" disabled>Next page</btn>#}
+{#            {% endif %}#}
+{#            <ul class="pagination-list">#}
+{#                {% for i in page_range|default_if_none:page.paginator.get_elided_page_range %}#}
+{#                {% if page.number == i %}#}
+{#                <li>#}
+{#                    <button class="pagination-link is-current" aria-label="Page {{ i }}" aria-current="page">{{ i }}</button>#}
+{#                </li>#}
+{#                {% else %}#}
+{#                {% if i == page.paginator.ELLIPSIS %}#}
+{#                <li>#}
+{#                    <span class="pagination-ellipsis">{{ i }}</span>#}
+{#                </li>#}
+{#                {% else %}#}
+{#                <button class=" btn pagination-link" unicorn:click="go_to_page({{ i }})" aria-label="Page {{ i }}" aria-current="page">{{ i }}</button>#}
+{#                </li>#}
+{#                {% endif %}#}
+{#                {% endif %}#}
+{#                {% endfor %}#}
+{#            </ul>#}
+{#        </nav>#}
+        {% endif %}
+    {% else %}
+        No results found.
+    {% endif %}
+    </div>
+</div>
